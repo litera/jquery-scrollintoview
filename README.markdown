@@ -1,13 +1,13 @@
-jQuery .scrollintoview() plugin <sup>(with additional :scrollable selector filter)</sup>
---
+jQuery .scrollintoview() plugin <sup>(with :scrollable selector filter)</sup>
+==
 This plugin makes it easy to scroll any element on your page into view. It scrolls in a user friendly way using animation (speed can be configured) so users never loose track where they moved within the current page. Default browser functionality simply jumps to some element which may confuse users greatly. This kind of behaviour is considered bad user experience, since pages look different above and below the fold. This means that users may as well think they were redirected to a different site (since it looks different) or at least page within the same site.
 
-How do we use this plugin
+How to use this plugin
 --
 Usage is very simple and straightforward:
 
 ```javascript
-    $("some_selector").scrollintoview();
+$("some_selector").scrollintoview();
 ```
 
 And that's it really. This is of course if we use defaults. It also supports some configuration possibilities that should be provided as an `options` object along with the call:
@@ -29,7 +29,7 @@ $("some_selector").scrollintoview({
 });
 ```
 
-How does this plugin solve the user experience problem
+How does this plugin solve the user experience issue
 --
 This plugin scrolls a particular element into view similar to browser built-in functionality (DOM's `scrollIntoView()` function), but works differently (and arguably more user friendly):
 
@@ -42,7 +42,9 @@ What about :scrollable selector filter
 --
 The good thing about this plugin is that you don't have to provide two elements: scrollable ancestor and element that will be scrolled into view. This plugin rather searches for the closest scrollable ancestor. By *scrollable* it means that its content exceedes its view area and that is also displays scrollbars (using `overflow:hidden` won't select element as scrollable). This checking is therefore implemented as a `:scrollable` selector filter that anyone can use.
 
-    var scrollableDivs = $("div:scrollable");
+```javascript
+var scrollableDivs = $("div:scrollable");
+```
 
 This code would select all `DIV` elements that have scrollbars and their content exceedes their viewable area
 
