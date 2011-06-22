@@ -2,7 +2,7 @@
 /*!
  * jQuery scrollintoview() plugin and :scrollable selector filter
  *
- * Version 1.5 (11 Mar 2011)
+ * Version 1.6 (09 Apr 2011)
  * Requires jQuery 1.4 or newer
  *
  * Copyright (c) 2011 Robert Koritnik
@@ -118,9 +118,14 @@
 						.animate(animOptions, options.duration)
 						.eq(0) // we want function to be called just once (ref. "html,body")
 						.queue(function (next) {
-							$.isFunction(options.complete) && options.complete();
+							$.isFunction(options.complete) && options.complete.call(scroller[0]);
 							next();
 						});
+				}
+				else
+				{
+					// when there's nothing to scroll, just call the "complete" function
+					$.isFunction(options.complete) && options.complete.call(scroller[0]);
 				}
 			}
 
