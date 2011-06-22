@@ -1,7 +1,8 @@
-/// <reference path="../jquery-1.4.1-vsdoc.js" />
-/*--------------------------------*/
-/* Plugin author: Robert Koritnik */
-/*--------------------------------*/
+﻿/// <reference path="../jquery-1.4.1-vsdoc.js" />
+/*---------------------------------*/
+/* Plugin author: Robert Koritnik  */
+/* Version      : 1.1 (4 Feb 2011) */
+/*---------------------------------*/
 
 (function ($) {
 	var converter = {
@@ -14,7 +15,7 @@
 
 	var settings = {
 		duration: "fast",
-		direction: "both",
+		direction: "both"
 	};
 
 	$.fn.extend({
@@ -27,7 +28,7 @@
 			/// <return type="jQuery">Returns the same jQuery set that this function was run on.</return>
 
 			options = $.extend({}, settings, options);
-			options.direction = converter[typeof(options.direction) === "string" && options.direction.toLowerCase()] || converter.both;
+			options.direction = converter[typeof (options.direction) === "string" && options.direction.toLowerCase()] || converter.both;
 
 			var dirStr = "";
 			if (options.direction.x === true) dirStr = "horizontal";
@@ -111,10 +112,52 @@
 		}
 	});
 
+	var scrollValue = {
+		auto: true,
+		scroll: true,
+		visible: false,
+		hidden: false
+	};
+
 	$.extend($.expr[":"], {
 		scrollable: function (element, index, meta, stack) {
-			var which = converter[typeof(meta[3]) === "string" && meta[3].toLowerCase()] || converter.both;
-			return which.y && (element.scrollHeight > element.offsetHeight) || which.x && (element.scrollWidth > element.offsetWidth);
+			var direction = converter[typeof (meta[3]) === "string" && meta[3].toLowerCase()] || converter.both;
+			var styles = (document.defaultView && document.defaultView.getComputedStyle ? document.defaultView.getComputedStyle(element, null) : element.currentStyle);
+			var overflow = {
+				x: scrollValue[styles.overflowX.toLowerCase()] || false,
+				y: scrollValue[styles.overflowY.toLowerCase()] || false
+			};
+			// check if completely unscrollable
+			if (!overflow.x && !overflow.y)
+			{
+				return false;
+			}
+
+			// element can be scrollable
+			var px = document.defaultView.getComputedStyle ? true : false;
+			var border = {
+				vertical: parseFloat(px ? styles.borderTopWidth : $.css(element, "borderTopWidth")) + parseFloat(px ? styles.borderBottomWidth : $.css(element, "borderBottomWidth")),
+				horizontal: parseFloat(px ? styles.borderLeftWidth : $.css(element, "borderLeftWidth")) + parseFloat(px ? styles.borderRightWidth : $.css(element, "borderRightWidth"))
+			};
+			var size = {
+				height: {
+					scroll: element.scrollHeight,
+					actual: element.offsetHeight - border.vertical,
+					client: element.clientHeight
+				},
+				width: {
+					scroll: element.scrollWidth,
+					actual: element.offsetWidth - border.horizontal,
+					client: element.clientWidth
+				},
+				scrollableX: function () {
+					return this.height.actual > this.height.client && this.width.scroll > this.width.client;
+				},
+				scrollableY: function () {
+					return this.width.actual > this.width.client && this.height.scroll > this.height.client;
+				}
+			};
+			return direction.y && size.scrollableY() || direction.x && size.scrollableX();
 		}
 	});
 })(jQuery);
