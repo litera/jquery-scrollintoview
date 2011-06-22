@@ -1,8 +1,8 @@
-﻿/// <reference path="../jquery-1.4.1-vsdoc.js" />
-/*---------------------------------*/
-/* Plugin author: Robert Koritnik  */
-/* Version      : 1.1 (4 Feb 2011) */
-/*---------------------------------*/
+﻿/// <reference path="../jquery-1.4.4-vsdoc.js" />
+/*----------------------------------*/
+/* Plugin author: Robert Koritnik   */
+/* Version      : 1.2 (15 Feb 2011) */
+/*----------------------------------*/
 
 (function ($) {
 	var converter = {
@@ -134,10 +134,10 @@
 			}
 
 			// element can be scrollable
-			var px = document.defaultView.getComputedStyle ? true : false;
+			var px = document.defaultView && document.defaultView.getComputedStyle ? true : false;
 			var border = {
-				vertical: parseFloat(px ? styles.borderTopWidth : $.css(element, "borderTopWidth")) + parseFloat(px ? styles.borderBottomWidth : $.css(element, "borderBottomWidth")),
-				horizontal: parseFloat(px ? styles.borderLeftWidth : $.css(element, "borderLeftWidth")) + parseFloat(px ? styles.borderRightWidth : $.css(element, "borderRightWidth"))
+				vertical: (parseFloat(px ? styles.borderTopWidth : $.css(element, "borderTopWidth")) || 0) + (parseFloat(px ? styles.borderBottomWidth : $.css(element, "borderBottomWidth")) ||0),
+				horizontal: (parseFloat(px ? styles.borderLeftWidth : $.css(element, "borderLeftWidth")) || 0) + (parseFloat(px ? styles.borderRightWidth : $.css(element, "borderRightWidth")) ||0)
 			};
 			var size = {
 				height: {
