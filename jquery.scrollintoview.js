@@ -1,14 +1,14 @@
 ﻿/// <reference path="../jquery-1.4.4-vsdoc.js" />
 /*!
- * jQuery scrollintoview() plugin and :scrollable selector filter
- *
- * Version 1.6 (09 Apr 2011)
- * Requires jQuery 1.4 or newer
- *
- * Copyright (c) 2011 Robert Koritnik
- * Licensed under the terms of the MIT license
- * http://www.opensource.org/licenses/mit-license.php
- */
+* jQuery scrollintoview() plugin and :scrollable selector filter
+*
+* Version 1.7 (30 Apr 2011)
+* Requires jQuery 1.4 or newer
+*
+* Copyright (c) 2011 Robert Koritnik
+* Licensed under the terms of the MIT license
+* http://www.opensource.org/licenses/mit-license.php
+*/
 
 (function ($) {
 	var converter = {
@@ -22,6 +22,53 @@
 	var settings = {
 		duration: "fast",
 		direction: "both"
+	};
+
+	var rootrx = /^(?:html)$/i;
+
+	// gets border dimensions
+	var borders = function (domElement, styles) {
+		styles = styles || (document.defaultView && document.defaultView.getComputedStyle ? document.defaultView.getComputedStyle(domElement, null) : domElement.currentStyle);
+		var px = document.defaultView && document.defaultView.getComputedStyle ? true : false;
+		var b = {
+			top: (parseFloat(px ? styles.borderTopWidth : $.css(domElement, "borderTopWidth")) || 0),
+			left: (parseFloat(px ? styles.borderLeftWidth : $.css(domElement, "borderLeftWidth")) || 0),
+			bottom: (parseFloat(px ? styles.borderBottomWidth : $.css(domElement, "borderBottomWidth")) || 0),
+			right: (parseFloat(px ? styles.borderRightWidth : $.css(domElement, "borderRightWidth")) || 0)
+		};
+		return {
+			top: b.top,
+			left: b.left,
+			bottom: b.bottom,
+			right: b.right,
+			vertical: b.top + b.bottom,
+			horizontal: b.left + b.right
+		};
+	};
+
+	var dimensions = function ($element) {
+		var win = $(window);
+		var isRoot = rootrx.test($element[0].nodeName);
+		return {
+			border: isRoot ? { top: 0, left: 0, bottom: 0, right: 0} : borders($element[0]),
+			scroll: {
+				top: (isRoot ? win : $element).scrollTop(),
+				left: (isRoot ? win : $element).scrollLeft()
+			},
+			scrollbar: {
+				right: isRoot ? 0 : $element.innerWidth() - $element[0].clientWidth,
+				bottom: isRoot ? 0 : $element.innerHeight() - $element[0].clientHeight
+			},
+			rect: (function () {
+				var r = $element[0].getBoundingClientRect();
+				return {
+					top: isRoot ? 0 : r.top,
+					left: isRoot ? 0 : r.left,
+					bottom: isRoot ? $element[0].clientHeight : r.bottom,
+					right: isRoot ? $element[0].clientWidth : r.right
+				};
+			})()
+		};
 	};
 
 	$.fn.extend({
@@ -48,33 +95,17 @@
 			if (scroller.length > 0)
 			{
 				scroller = scroller.eq(0);
-				var sizes = {
-					visible: (function () {
-						var vDim = scroller.offset();
-						return {
-							top: vDim.top,
-							left: vDim.left,
-							bottom: vDim.top + scroller[0].clientHeight,
-							right: vDim.left + scroller[0].clientWidth,
-							scrollX: scroller.scrollLeft(),
-							scrollY: scroller.scrollTop()
-						};
-					})(),
-					actual: (function () {
-						var vDim = el.offset();
-						return {
-							top: vDim.top,
-							left: vDim.left,
-							bottom: vDim.top + el.outerHeight(),
-							right: vDim.left + el.outerWidth()
-						};
-					})()
+
+				var dim = {
+					e: dimensions(el),
+					s: dimensions(scroller)
 				};
-				var padding = {
-					top: sizes.actual.top - sizes.visible.top,
-					bottom: sizes.visible.bottom - sizes.actual.bottom,
-					left: sizes.actual.left - sizes.visible.left,
-					right: sizes.visible.right - sizes.actual.right
+
+				var rel = {
+					top: dim.e.rect.top - (dim.s.rect.top + dim.s.border.top),
+					bottom: dim.s.rect.bottom - dim.s.border.bottom - dim.s.scrollbar.bottom - dim.e.rect.bottom,
+					left: dim.e.rect.left - (dim.s.rect.left + dim.s.border.left),
+					right: dim.s.rect.right - dim.s.border.right - dim.s.scrollbar.right - dim.e.rect.right
 				};
 
 				var animOptions = {};
@@ -82,35 +113,33 @@
 				// vertical scroll
 				if (options.direction.y === true)
 				{
-					if (padding.top < 0)
+					if (rel.top < 0)
 					{
-						animOptions.scrollTop = sizes.visible.scrollY + padding.top;
+						animOptions.scrollTop = dim.s.scroll.top + rel.top;
 					}
-					if (padding.top > 0 && padding.bottom < 0)
+					else if (rel.top > 0 && rel.bottom < 0)
 					{
-						// Using Math.Min() ensures that elements higher than scroll height get cut off at the bottom
-						animOptions.scrollTop = sizes.visible.scrollY + Math.min(-padding.bottom, padding.top);
+						animOptions.scrollTop = dim.s.scroll.top + Math.min(rel.top, -rel.bottom);
 					}
 				}
 
 				// horizontal scroll
 				if (options.direction.x === true)
 				{
-					if (padding.left < 0)
+					if (rel.left < 0)
 					{
-						animOptions.scrollLeft = sizes.visible.scrollX + padding.left;
+						animOptions.scrollLeft = dim.s.scroll.left + rel.left;
 					}
-					if (padding.left > 0 && padding.right < 0)
+					else if (rel.left > 0 && rel.right < 0)
 					{
-						// Using Math.Min() ensures that elements wider than scroll width get cut off on the right
-						animOptions.scrollLeft = sizes.visible.scrollX + Math.min(-padding.right, padding.left);
+						animOptions.scrollLeft = dim.s.scroll.left + Math.min(rel.left, -rel.right);
 					}
 				}
 
 				// scroll if needed
 				if (!$.isEmptyObject(animOptions))
 				{
-					if (scroller[0].nodeName.toLowerCase() == "html")
+					if (rootrx.test(scroller[0].nodeName))
 					{
 						scroller = $("html,body");
 					}
@@ -148,20 +177,16 @@
 			var overflow = {
 				x: scrollValue[styles.overflowX.toLowerCase()] || false,
 				y: scrollValue[styles.overflowY.toLowerCase()] || false,
-				isRoot: element.nodeName.toLowerCase() == "html"
+				isRoot: rootrx.test(element.nodeName)
 			};
+
 			// check if completely unscrollable (exclude HTML element because it's special)
 			if (!overflow.x && !overflow.y && !overflow.isRoot)
 			{
 				return false;
 			}
 
-			// element can be scrollable
-			var px = document.defaultView && document.defaultView.getComputedStyle ? true : false;
-			var border = {
-				vertical: (parseFloat(px ? styles.borderTopWidth : $.css(element, "borderTopWidth")) || 0) + (parseFloat(px ? styles.borderBottomWidth : $.css(element, "borderBottomWidth")) || 0),
-				horizontal: (parseFloat(px ? styles.borderLeftWidth : $.css(element, "borderLeftWidth")) || 0) + (parseFloat(px ? styles.borderRightWidth : $.css(element, "borderRightWidth")) || 0)
-			};
+			var border = borders(element, styles);
 			var size = {
 				height: {
 					scroll: element.scrollHeight,
