@@ -2,7 +2,8 @@
 /*!
  * jQuery scrollintoview() plugin and :scrollable selector filter
  *
- * Version 1.3 (20 Feb 2011)
+ * Version 1.5 (11 Mar 2011)
+ * Requires jQuery 1.4 or newer
  *
  * Copyright (c) 2011 Robert Koritnik
  * Licensed under the terms of the MIT license
@@ -27,9 +28,9 @@
 		scrollintoview: function (options) {
 			/// <summary>Scrolls the first element in the set into view by scrolling its closest scrollable parent.</summary>
 			/// <param name="options" type="Object">Additional options that can configure scrolling:
-			///		duration (default: "fast") - jQuery animation speed (can be a duration string or number of milliseconds)
-			///		direction (default: "both") - select possible scrollings ("vertical" or "y", "horizontal" or "x", "both")
-			///		complete (default: none) - a function to call when scrolling completes (called in context of the DOM element being scrolled)
+			///        duration (default: "fast") - jQuery animation speed (can be a duration string or number of milliseconds)
+			///        direction (default: "both") - select possible scrollings ("vertical" or "y", "horizontal" or "x", "both")
+			///        complete (default: none) - a function to call when scrolling completes (called in context of the DOM element being scrolled)
 			/// </param>
 			/// <return type="jQuery">Returns the same jQuery set that this function was run on.</return>
 
@@ -109,10 +110,17 @@
 				// scroll if needed
 				if (!$.isEmptyObject(animOptions))
 				{
-					scroller.animate(animOptions, {
-						duration: options.duration,
-						complete: $.isFunction(options.complete) ? options.complete : function () { }
-					});
+					if (scroller[0].nodeName.toLowerCase() == "html")
+					{
+						scroller = $("html,body");
+					}
+					scroller
+						.animate(animOptions, options.duration)
+						.eq(0) // we want function to be called just once (ref. "html,body")
+						.queue(function (next) {
+							$.isFunction(options.complete) && options.complete();
+							next();
+						});
 				}
 			}
 
@@ -134,10 +142,11 @@
 			var styles = (document.defaultView && document.defaultView.getComputedStyle ? document.defaultView.getComputedStyle(element, null) : element.currentStyle);
 			var overflow = {
 				x: scrollValue[styles.overflowX.toLowerCase()] || false,
-				y: scrollValue[styles.overflowY.toLowerCase()] || false
+				y: scrollValue[styles.overflowY.toLowerCase()] || false,
+				isRoot: element.nodeName.toLowerCase() == "html"
 			};
-			// check if completely unscrollable
-			if (!overflow.x && !overflow.y)
+			// check if completely unscrollable (exclude HTML element because it's special)
+			if (!overflow.x && !overflow.y && !overflow.isRoot)
 			{
 				return false;
 			}
@@ -160,10 +169,10 @@
 					client: element.clientWidth
 				},
 				scrollableX: function () {
-					return this.height.actual > this.height.client && this.width.scroll > this.width.client;
+					return (this.height.actual > this.height.client || overflow.isRoot) && this.width.scroll > this.width.client;
 				},
 				scrollableY: function () {
-					return this.width.actual > this.width.client && this.height.scroll > this.height.client;
+					return (this.width.actual > this.width.client || overflow.isRoot) && this.height.scroll > this.height.client;
 				}
 			};
 			return direction.y && size.scrollableY() || direction.x && size.scrollableX();
