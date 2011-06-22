@@ -1,8 +1,13 @@
 ﻿/// <reference path="../jquery-1.4.4-vsdoc.js" />
-/*----------------------------------*/
-/* Plugin author: Robert Koritnik   */
-/* Version      : 1.2 (15 Feb 2011) */
-/*----------------------------------*/
+/*!
+ * jQuery scrollintoview() plugin and :scrollable selector filter
+ *
+ * Version 1.3 (20 Feb 2011)
+ *
+ * Copyright (c) 2011 Robert Koritnik
+ * Licensed under the terms of the MIT license
+ * http://www.opensource.org/licenses/mit-license.php
+ */
 
 (function ($) {
 	var converter = {
@@ -24,6 +29,7 @@
 			/// <param name="options" type="Object">Additional options that can configure scrolling:
 			///		duration (default: "fast") - jQuery animation speed (can be a duration string or number of milliseconds)
 			///		direction (default: "both") - select possible scrollings ("vertical" or "y", "horizontal" or "x", "both")
+			///		complete (default: none) - a function to call when scrolling completes (called in context of the DOM element being scrolled)
 			/// </param>
 			/// <return type="jQuery">Returns the same jQuery set that this function was run on.</return>
 
@@ -101,9 +107,12 @@
 				}
 
 				// scroll if needed
-				if (!jQuery.isEmptyObject(animOptions))
+				if (!$.isEmptyObject(animOptions))
 				{
-					scroller.animate(animOptions, options.duration);
+					scroller.animate(animOptions, {
+						duration: options.duration,
+						complete: $.isFunction(options.complete) ? options.complete : function () { }
+					});
 				}
 			}
 
@@ -136,8 +145,8 @@
 			// element can be scrollable
 			var px = document.defaultView && document.defaultView.getComputedStyle ? true : false;
 			var border = {
-				vertical: (parseFloat(px ? styles.borderTopWidth : $.css(element, "borderTopWidth")) || 0) + (parseFloat(px ? styles.borderBottomWidth : $.css(element, "borderBottomWidth")) ||0),
-				horizontal: (parseFloat(px ? styles.borderLeftWidth : $.css(element, "borderLeftWidth")) || 0) + (parseFloat(px ? styles.borderRightWidth : $.css(element, "borderRightWidth")) ||0)
+				vertical: (parseFloat(px ? styles.borderTopWidth : $.css(element, "borderTopWidth")) || 0) + (parseFloat(px ? styles.borderBottomWidth : $.css(element, "borderBottomWidth")) || 0),
+				horizontal: (parseFloat(px ? styles.borderLeftWidth : $.css(element, "borderLeftWidth")) || 0) + (parseFloat(px ? styles.borderRightWidth : $.css(element, "borderRightWidth")) || 0)
 			};
 			var size = {
 				height: {
