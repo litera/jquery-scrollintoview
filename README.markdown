@@ -46,6 +46,6 @@ The good thing about this plugin is that you don't have to provide two elements:
 var scrollableDivs = $("div:scrollable");
 ```
 
-This code would select all `DIV` elements that have scrollbars and their content exceedes their viewable area
+This code would select all `DIV` elements that have scroll bars (at least one) and their content exceedes their visible area (at least in direction that can be scrolled using scroll bar).
 
-[See details](http://erraticdev.blogspot.com/2011/02/jquery-scroll-into-view-plugin-with.html).
+[See blog post for details](http://erraticdev.blogspot.com/2011/02/jquery-scroll-into-view-plugin-with.html).
