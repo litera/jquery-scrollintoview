@@ -33,10 +33,10 @@ How does this plugin solve the user experience issue
 --
 This plugin scrolls a particular element into view similar to browser built-in functionality (DOM's `scrollIntoView()` function), but works differently (and arguably more user friendly):
 
-* it only scrolls to element when element is actually out of view; if element is in view (anywhere in visible document area), no scrolling will be performed
-* it scrolls using animation effects; when scrolling is performed users know exactly they're not redirected anywhere, but actually see that they're simply moved somewhere else within the same page (as well as in which direction they moved)
-* there's always the smallest amount of scrolling performed; when element is above the visible document area it will be scrolled to the top of visible area; when element is below the visible are it will be scrolled to the bottom of visible area
-* when element's size exceeds the size of visible document area its top-left corner is the one that will be scrolled to.
+* it only scrolls to element when element is actually out of view; if element is in view (anywhere in visible document area), no scrolling will be performed;
+* it scrolls using animation effects; when scrolling is performed users know exactly they're not redirected anywhere, but actually see that they're simply moved somewhere else within the same page (as well as in which direction they moved);
+* there's always the smallest amount of scrolling being applied; when element is above the visible document area it will be scrolled to the top of visible area; when element is below the visible are it will be scrolled to the bottom of visible area; this is the most consistent way of scrolling - when scrolling would always be to top it sometimes couldn't scroll an element to top when it was close to the bottom of scrollable container (thus scrolling would be unpredictable);
+* when element's size exceeds the size of visible document area its top-left corner is the one that will be scrolled to;
 
 What about :scrollable selector filter
 --
