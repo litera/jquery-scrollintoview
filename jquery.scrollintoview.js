@@ -1,14 +1,13 @@
-﻿/// <reference path="../jquery-1.4.4-vsdoc.js" />
-/*!
-* jQuery scrollintoview() plugin and :scrollable selector filter
-*
-* Version 1.7 (30 Apr 2011)
-* Requires jQuery 1.4 or newer
-*
-* Copyright (c) 2011 Robert Koritnik
-* Licensed under the terms of the MIT license
-* http://www.opensource.org/licenses/mit-license.php
-*/
+﻿/*!
+ * jQuery scrollintoview() plugin and :scrollable selector filter
+ *
+ * Version 1.8 (14 Jul 2011)
+ * Requires jQuery 1.4 or newer
+ *
+ * Copyright (c) 2011 Robert Koritnik
+ * Licensed under the terms of the MIT license
+ * http://www.opensource.org/licenses/mit-license.php
+ */
 
 (function ($) {
 	var converter = {
@@ -186,23 +185,21 @@
 				return false;
 			}
 
-			var border = borders(element, styles);
 			var size = {
 				height: {
 					scroll: element.scrollHeight,
-					actual: element.offsetHeight - border.vertical,
 					client: element.clientHeight
 				},
 				width: {
 					scroll: element.scrollWidth,
-					actual: element.offsetWidth - border.horizontal,
 					client: element.clientWidth
 				},
+				// check overflow.x/y because iPad (and possibly other tablets) don't dislay scrollbars
 				scrollableX: function () {
-					return (this.height.actual > this.height.client || overflow.isRoot) && this.width.scroll > this.width.client;
+					return (overflow.x || overflow.isRoot) && this.width.scroll > this.width.client;
 				},
 				scrollableY: function () {
-					return (this.width.actual > this.width.client || overflow.isRoot) && this.height.scroll > this.height.client;
+					return (overflow.y || overflow.isRoot) && this.height.scroll > this.height.client;
 				}
 			};
 			return direction.y && size.scrollableY() || direction.x && size.scrollableX();
