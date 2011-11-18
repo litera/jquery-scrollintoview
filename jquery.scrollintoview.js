@@ -155,6 +155,9 @@
 					// when there's nothing to scroll, just call the "complete" function
 					$.isFunction(options.complete) && options.complete.call(scroller[0]);
 				}
+			} else if (el.length > 0) {
+				// when an object to scroll exists, but has no :scrollable around, also calling complete
+				$.isFunction(options.complete) && options.complete.call();
 			}
 
 			// return set back
