@@ -88,7 +88,7 @@
 			if (options.direction.y === true) dirStr = dirStr ? "both" : "vertical";
 
 			var el = this.eq(0);
-			var scroller = el.closest(":scrollable(" + dirStr + ")");
+			var scroller = el.parent().closest(":scrollable(" + dirStr + ")");
 
 			// check if there's anything to scroll in the first place
 			if (scroller.length > 0)
