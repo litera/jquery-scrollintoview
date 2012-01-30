@@ -88,12 +88,14 @@
 			if (options.direction.y === true) dirStr = dirStr ? "both" : "vertical";
 
 			var el = this.eq(0);
-			var scroller = el.closest(":scrollable(" + dirStr + ")");
+			var scroller = el.parent().closest(":scrollable(" + dirStr + ")");
 
 			// check if there's anything to scroll in the first place
 			if (scroller.length > 0)
 			{
 				scroller = scroller.eq(0);
+				// scroll all ancestor :scrollables with same options - except the callback.
+				scroller.scrollintoview( $.extend({}, arguments[0], { callback:null }) );
 
 				var dim = {
 					e: dimensions(el),
@@ -171,6 +173,10 @@
 
 	$.extend($.expr[":"], {
 		scrollable: function (element, index, meta, stack) {
+			if ( element == document )
+			{
+				return false;
+			}
 			var direction = converter[typeof (meta[3]) === "string" && meta[3].toLowerCase()] || converter.both;
 			var styles = (document.defaultView && document.defaultView.getComputedStyle ? document.defaultView.getComputedStyle(element, null) : element.currentStyle);
 			var overflow = {
