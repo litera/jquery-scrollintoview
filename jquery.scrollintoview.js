@@ -95,7 +95,7 @@
 			{
 				scroller = scroller.eq(0);
 				// scroll all ancestor :scrollables with same options - except the callback.
-				scroller.scrollintoview( $.extend({}, arguments[0], { callback:null }) );
+				scroller.scrollintoview( $.extend({}, arguments[0], { complete:null }) );
 
 				var dim = {
 					e: dimensions(el),
