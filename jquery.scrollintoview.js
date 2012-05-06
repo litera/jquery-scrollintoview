@@ -1,12 +1,14 @@
 ﻿/*!
  * jQuery scrollintoview() plugin and :scrollable selector filter
  *
- * Version 1.8 (14 Jul 2011)
+ * Version 1.8.a (5 May 2012)
  * Requires jQuery 1.4 or newer
  *
  * Copyright (c) 2011 Robert Koritnik
  * Licensed under the terms of the MIT license
  * http://www.opensource.org/licenses/mit-license.php
+ *
+ * Modified by Alex King to add vertical offset support.
  */
 
 (function ($) {
@@ -20,7 +22,8 @@
 
 	var settings = {
 		duration: "fast",
-		direction: "both"
+		direction: "both",
+		offset: 0
 	};
 
 	var rootrx = /^(?:html)$/i;
@@ -112,13 +115,13 @@
 				// vertical scroll
 				if (options.direction.y === true)
 				{
-					if (rel.top < 0)
+					if (rel.top < 0 + options.offset)
 					{
-						animOptions.scrollTop = dim.s.scroll.top + rel.top;
+						animOptions.scrollTop = dim.s.scroll.top + rel.top - options.offset;
 					}
-					else if (rel.top > 0 && rel.bottom < 0)
+					else if (rel.top > 0 + options.offset && rel.bottom < 0 - options.offset)
 					{
-						animOptions.scrollTop = dim.s.scroll.top + Math.min(rel.top, -rel.bottom);
+						animOptions.scrollTop = dim.s.scroll.top + Math.min(rel.top, -rel.bottom + options.offset);
 					}
 				}
 
