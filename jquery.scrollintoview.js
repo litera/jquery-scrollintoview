@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * jQuery scrollintoview() plugin and :scrollable selector filter
  *
  * Version 1.8 (14 Jul 2011)
@@ -20,7 +20,8 @@
 
 	var settings = {
 		duration: "fast",
-		direction: "both"
+		direction: "both",
+		viewPadding: 0
 	};
 
 	var rootrx = /^(?:html)$/i;
@@ -83,6 +84,17 @@
 			options = $.extend({}, settings, options);
 			options.direction = converter[typeof (options.direction) === "string" && options.direction.toLowerCase()] || converter.both;
 
+			if (typeof options.viewPadding == "number") {
+				options.viewPadding = { x: options.viewPadding , y: options.viewPadding };
+			} else if (typeof options.viewPadding == "object") {
+				if (options.viewPadding.x == undefined) {
+					options.viewPadding.x = 0;
+				}
+				if (options.viewPadding.y == undefined) {
+					options.viewPadding.y = 0;
+				}
+			}
+
 			var dirStr = "";
 			if (options.direction.x === true) dirStr = "horizontal";
 			if (options.direction.y === true) dirStr = dirStr ? "both" : "vertical";
@@ -101,10 +113,10 @@
 				};
 
 				var rel = {
-					top: dim.e.rect.top - (dim.s.rect.top + dim.s.border.top),
-					bottom: dim.s.rect.bottom - dim.s.border.bottom - dim.s.scrollbar.bottom - dim.e.rect.bottom,
-					left: dim.e.rect.left - (dim.s.rect.left + dim.s.border.left),
-					right: dim.s.rect.right - dim.s.border.right - dim.s.scrollbar.right - dim.e.rect.right
+					top: dim.e.rect.top - (dim.s.rect.top + dim.s.border.top) - options.viewPadding.y,
+					bottom: dim.s.rect.bottom - dim.s.border.bottom - dim.s.scrollbar.bottom - dim.e.rect.bottom + options.viewPadding.y,
+					left: dim.e.rect.left - (dim.s.rect.left + dim.s.border.left) - options.viewPadding.x,
+					right: dim.s.rect.right - dim.s.border.right - dim.s.scrollbar.right - dim.e.rect.right + options.viewPadding.x
 				};
 
 				var animOptions = {};
