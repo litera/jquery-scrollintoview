@@ -9,7 +9,16 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-(function ($) {
+!function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        factory(require('jquery'));
+    } else {
+        factory(root.jQuery);
+    }
+}
+(this, function ($) {
 	var converter = {
 		vertical: { x: false, y: true },
 		horizontal: { x: true, y: false },
@@ -205,4 +214,4 @@
 			return direction.y && size.scrollableY() || direction.x && size.scrollableX();
 		}
 	});
-})(jQuery);
+});
