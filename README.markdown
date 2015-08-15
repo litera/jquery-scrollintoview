@@ -12,6 +12,7 @@ $("some_selector").scrollintoview();
 
 And that's it really. This is of course if we use defaults. It also supports some configuration possibilities that should be provided as an `options` object along with the call:
 
+* **block** (default: null) - alignment of the destination element relative to the viewport (start, end)
 * **duration** (default: "fast") - specified the same as with jQuery animate function; it can be provided as a string (slow, normal, fast) or a number of milliseconds that specifies animation duration
 * **direction** (default: "both") - scrolling can be performed in three different directions:
     * **x** or **horizontal**

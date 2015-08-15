@@ -19,6 +19,7 @@
 	};
 
 	var settings = {
+		block: null, // "start" | "end"
 		duration: "fast",
 		direction: "both"
 	};
@@ -74,6 +75,7 @@
 		scrollintoview: function (options) {
 			/// <summary>Scrolls the first element in the set into view by scrolling its closest scrollable parent.</summary>
 			/// <param name="options" type="Object">Additional options that can configure scrolling:
+			///        block (default: null) - alignment destination element realative to the view port ("start" or "end")
 			///        duration (default: "fast") - jQuery animation speed (can be a duration string or number of milliseconds)
 			///        direction (default: "both") - select possible scrollings ("vertical" or "y", "horizontal" or "x", "both")
 			///        complete (default: none) - a function to call when scrolling completes (called in context of the DOM element being scrolled)
@@ -112,7 +114,13 @@
 				// vertical scroll
 				if (options.direction.y === true)
 				{
-					if (rel.top < 0)
+					if ('start' == options.block) {
+						animOptions.scrollTop = rel.top;
+					}
+					else if ('end' == options.block) {
+						animOptions.scrollTop = -rel.bottom;
+					}
+					else if (rel.top < 0)
 					{
 						animOptions.scrollTop = dim.s.scroll.top + rel.top;
 					}
@@ -125,7 +133,13 @@
 				// horizontal scroll
 				if (options.direction.x === true)
 				{
-					if (rel.left < 0)
+					if ('start' == options.block) {
+						animOptions.scrollLeft = rel.left;
+					}
+					else if ('end' == options.block) {
+						animOptions.scrollLeft = -rel.right;
+					}
+					else if (rel.left < 0)
 					{
 						animOptions.scrollLeft = dim.s.scroll.left + rel.left;
 					}
