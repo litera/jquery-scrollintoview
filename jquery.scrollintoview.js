@@ -20,6 +20,7 @@
 
 	var settings = {
 		block: null, // "start" | "end"
+		delta: 0,
 		duration: "fast",
 		direction: "both"
 	};
@@ -76,6 +77,7 @@
 			/// <summary>Scrolls the first element in the set into view by scrolling its closest scrollable parent.</summary>
 			/// <param name="options" type="Object">Additional options that can configure scrolling:
 			///        block (default: null) - alignment destination element realative to the view port ("start" or "end")
+			///        delta (default: 0) - static addition to scrolling
 			///        duration (default: "fast") - jQuery animation speed (can be a duration string or number of milliseconds)
 			///        direction (default: "both") - select possible scrollings ("vertical" or "y", "horizontal" or "x", "both")
 			///        complete (default: none) - a function to call when scrolling completes (called in context of the DOM element being scrolled)
@@ -84,6 +86,17 @@
 
 			options = $.extend({}, settings, options);
 			options.direction = converter[typeof (options.direction) === "string" && options.direction.toLowerCase()] || converter.both;
+			if (typeof (options.delta) === "object") {
+				$.extend(options.delta, {
+					x: settings.delta,
+					y: settings.delta
+				});
+			} else {
+				options.delta = {
+					x: options.delta,
+					y: options.delta
+				};
+			}
 
 			var dirStr = "";
 			if (options.direction.x === true) dirStr = "horizontal";
@@ -115,10 +128,10 @@
 				if (options.direction.y === true)
 				{
 					if ('start' == options.block) {
-						animOptions.scrollTop = rel.top;
+						animOptions.scrollTop = dim.s.scroll.top + rel.top;
 					}
 					else if ('end' == options.block) {
-						animOptions.scrollTop = -rel.bottom;
+						animOptions.scrollTop = dim.s.scroll.top + Math.min(rel.top, -rel.bottom);
 					}
 					else if (rel.top < 0)
 					{
@@ -128,16 +141,18 @@
 					{
 						animOptions.scrollTop = dim.s.scroll.top + Math.min(rel.top, -rel.bottom);
 					}
+					
+					if (undefined !== animOptions.scrollTop) animOptions.scrollTop += options.delta.y;
 				}
 
 				// horizontal scroll
 				if (options.direction.x === true)
 				{
 					if ('start' == options.block) {
-						animOptions.scrollLeft = rel.left;
+						animOptions.scrollLeft = dim.s.scroll.left + rel.left;
 					}
 					else if ('end' == options.block) {
-						animOptions.scrollLeft = -rel.right;
+						animOptions.scrollLeft = dim.s.scroll.left + Math.min(rel.left, -rel.right);
 					}
 					else if (rel.left < 0)
 					{
@@ -147,6 +162,8 @@
 					{
 						animOptions.scrollLeft = dim.s.scroll.left + Math.min(rel.left, -rel.right);
 					}
+					
+					if (undefined !== animOptions.scrollLeft) animOptions.scrollLeft += options.delta.x;
 				}
 
 				// scroll if needed
