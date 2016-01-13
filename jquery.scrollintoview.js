@@ -156,6 +156,10 @@
 					$.isFunction(options.complete) && options.complete.call(scroller[0]);
 				}
 			}
+			else {
+				// If there's no scrollable ancestors then we should call the "complete" function immediately
+				$.isFunction(options.complete) && options.complete.call(null);
+			}
 
 			// return set back
 			return this;

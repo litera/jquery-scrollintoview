@@ -17,7 +17,7 @@ And that's it really. This is of course if we use defaults. It also supports som
     * **x** or **horizontal**
     * **y** or **vertical**
     * **both** - scrolling will perform in both directions; since scrolling is performed only when element is actually out of view this simply means that scrolling may only perform in one direction even though you set it to scroll in both directions; *both* is therefore the most reliable scrolling option that will make sure your element will be visible
-* **complete** function - this is the complete handler function that will get called when scrolling completes; it runs in context of scrollable element; this function will be called regardless whether scrolling will perform or not (when element already in view); *but* it won't get called when there's no scrollable element (context can't be determined)
+* **complete** function - this is the complete handler function that will get called when scrolling completes; it runs in context of scrollable element; this function will be called regardless whether scrolling will perform or not (when element already in view);
 
 ```javascript
 $("some_selector").scrollintoview({
