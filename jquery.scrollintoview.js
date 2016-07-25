@@ -70,6 +70,8 @@
 		};
 	};
 
+	var currentScroller = null;
+
 	$.fn.extend({
 		scrollintoview: function (options) {
 			/// <summary>Scrolls the first element in the set into view by scrolling its closest scrollable parent.</summary>
@@ -142,10 +144,16 @@
 					{
 						scroller = $("html,body");
 					}
+					if (currentScroller)
+					{
+						currentScroller.stop();
+					}
+					currentScroller = scroller;
 					scroller
 						.animate(animOptions, options.duration)
 						.eq(0) // we want function to be called just once (ref. "html,body")
 						.queue(function (next) {
+							currentScroller = null;
 							$.isFunction(options.complete) && options.complete.call(scroller[0]);
 							next();
 						});
